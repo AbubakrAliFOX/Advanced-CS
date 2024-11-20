@@ -1,0 +1,7 @@
+E:\Downloads\WebDev\Demos\Advanced_C#\bin\Debug\Advanced_C#.exe.config
+E:\Downloads\WebDev\Demos\Advanced_C#\bin\Debug\Advanced_C#.exe
+E:\Downloads\WebDev\Demos\Advanced_C#\bin\Debug\Advanced_C#.pdb
+E:\Downloads\WebDev\Demos\Advanced_C#\obj\Debug\Advanced_C#.csproj.AssemblyReference.cache
+E:\Downloads\WebDev\Demos\Advanced_C#\obj\Debug\Advanced_C#.csproj.CoreCompileInputs.cache
+E:\Downloads\WebDev\Demos\Advanced_C#\obj\Debug\Advanced_C#.exe
+E:\Downloads\WebDev\Demos\Advanced_C#\obj\Debug\Advanced_C#.pdb
