@@ -1,20 +1,64 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
+using System.Runtime.Serialization.Json;
+using System.Runtime.Serialization.Formatters.Binary;
+using static Advanced_C_.Program;
 
 namespace Advanced_C_
 {
-    internal class Program
+    public class Program
     {
         static void Main(string[] args)
         {
-            int? Age = null;
+            //int? Age = null;
 
-            string PersonAge = Age?.ToString() ?? "Hi";
+            //string PersonAge = Age?.ToString() ?? "Hi";
 
-            Console.WriteLine("Age is " + PersonAge);
+            //Console.WriteLine("Age is " + PersonAge);
+
+            Person User = new Person { Name = "خالد عبدالله", Age = 28 };
+
+            User.Age = 10;
+
+            XmlSerializer serializer = new XmlSerializer(typeof(Person));
+
+            using (TextWriter writer = new StreamWriter("Person.xml"))
+            {
+                serializer.Serialize(writer, User);
+            }
+
+            //Json
+
+            DataContractJsonSerializer jsonSerializer = new DataContractJsonSerializer(typeof(Person));
+            using (MemoryStream stream = new MemoryStream())
+            {
+                jsonSerializer.WriteObject(stream, User);
+                string jsonString = System.Text.Encoding.UTF8.GetString(stream.ToArray());
+
+
+                // Save the JSON string to a file (optional)
+                File.WriteAllText("person.json", jsonString);
+            }
+
+            BinaryFormatter formatter = new BinaryFormatter();
+            using (FileStream stream = new FileStream("person.bin", FileMode.Create))
+            {
+                formatter.Serialize(stream, User);
+            }
         }
+
+        [Serializable]
+        public class Person
+        {
+            public string Name { get; set; }
+            public int Age { get; set; }
+
+        }
+
     }
 }
