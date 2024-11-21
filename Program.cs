@@ -21,35 +21,51 @@ namespace Advanced_C_
 
             //Console.WriteLine("Age is " + PersonAge);
 
-            Person User = new Person { Name = "خالد عبدالله", Age = 28 };
+            //Person User = new Person { Name = "خالد عبدالله", Age = 28 };
 
-            User.Age = 10;
+            //User.Age = 10;
 
-            XmlSerializer serializer = new XmlSerializer(typeof(Person));
+            //XmlSerializer serializer = new XmlSerializer(typeof(Person));
 
-            using (TextWriter writer = new StreamWriter("Person.xml"))
-            {
-                serializer.Serialize(writer, User);
-            }
+            //using (TextWriter writer = new StreamWriter("Person.xml"))
+            //{
+            //    serializer.Serialize(writer, User);
+            //}
 
-            //Json
+            ////Json
 
-            DataContractJsonSerializer jsonSerializer = new DataContractJsonSerializer(typeof(Person));
-            using (MemoryStream stream = new MemoryStream())
-            {
-                jsonSerializer.WriteObject(stream, User);
-                string jsonString = System.Text.Encoding.UTF8.GetString(stream.ToArray());
+            //DataContractJsonSerializer jsonSerializer = new DataContractJsonSerializer(typeof(Person));
+            //using (MemoryStream stream = new MemoryStream())
+            //{
+            //    jsonSerializer.WriteObject(stream, User);
+            //    string jsonString = System.Text.Encoding.UTF8.GetString(stream.ToArray());
 
 
-                // Save the JSON string to a file (optional)
-                File.WriteAllText("person.json", jsonString);
-            }
+            //    // Save the JSON string to a file (optional)
+            //    File.WriteAllText("person.json", jsonString);
+            //}
 
-            BinaryFormatter formatter = new BinaryFormatter();
-            using (FileStream stream = new FileStream("person.bin", FileMode.Create))
-            {
-                formatter.Serialize(stream, User);
-            }
+            //BinaryFormatter formatter = new BinaryFormatter();
+            //using (FileStream stream = new FileStream("person.bin", FileMode.Create))
+            //{
+            //    formatter.Serialize(stream, User);
+            //}
+
+
+            Type type = typeof(Person);
+
+            Console.WriteLine(type.FullName);
+            Console.WriteLine(type.Name);
+            Console.WriteLine(type.IsClass);
+            //var methods = type.GetMethods();
+            //foreach (var method in methods)
+            //{
+            //    Console.WriteLine($"Name: {method.Name}, Type: {method.GetType()}, Return Type: {method.ReturnType}");
+
+            //}
+
+            object classInstance = Activator.CreateInstance(type);
+            type.GetMethod("PrintName").Invoke(classInstance, null);
         }
 
         [Serializable]
@@ -57,6 +73,11 @@ namespace Advanced_C_
         {
             public string Name { get; set; }
             public int Age { get; set; }
+
+            public void PrintName ()
+            {
+                Console.WriteLine("Abuuuuu");
+            }
 
         }
 
