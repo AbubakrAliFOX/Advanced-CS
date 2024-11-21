@@ -8,6 +8,7 @@ using System.Xml.Serialization;
 using System.Runtime.Serialization.Json;
 using System.Runtime.Serialization.Formatters.Binary;
 using static Advanced_C_.Program;
+using Microsoft.Win32.SafeHandles;
 
 namespace Advanced_C_
 {
@@ -52,26 +53,41 @@ namespace Advanced_C_
             //}
 
 
-            Type type = typeof(Person);
+            //Type type = typeof(Person);
 
-            Console.WriteLine(type.FullName);
-            Console.WriteLine(type.Name);
-            Console.WriteLine(type.IsClass);
-            //var methods = type.GetMethods();
-            //foreach (var method in methods)
-            //{
-            //    Console.WriteLine($"Name: {method.Name}, Type: {method.GetType()}, Return Type: {method.ReturnType}");
+            //Console.WriteLine(type.FullName);
+            //Console.WriteLine(type.Name);
+            //Console.WriteLine(type.IsClass);
+            ////var methods = type.GetMethods();
+            ////foreach (var method in methods)
+            ////{
+            ////    Console.WriteLine($"Name: {method.Name}, Type: {method.GetType()}, Return Type: {method.ReturnType}");
 
-            //}
+            ////}
 
-            object classInstance = Activator.CreateInstance(type);
-            type.GetMethod("PrintName").Invoke(classInstance, null);
+            //object classInstance = Activator.CreateInstance(type);
+            //type.GetMethod("PrintName").Invoke(classInstance, null);
+
+
         }
 
-        [Serializable]
+        [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
+        public class LengthAttribute : Attribute
+        {
+            public int Min { get; set; }
+            public int Max { get; set; }
+            public string ErrMsg { get; set; }
+            public LengthAttribute(int Min, int Max)
+            {
+                this.Min = Min;
+                this.Max = Max; 
+            }
+
         public class Person
         {
             public string Name { get; set; }
+
+            [Length(20, 100, ErrMsg = "Age must be between 20 and 100")]
             public int Age { get; set; }
 
             public void PrintName ()
