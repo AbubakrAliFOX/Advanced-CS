@@ -9,6 +9,7 @@ using System.Runtime.Serialization.Json;
 using System.Runtime.Serialization.Formatters.Binary;
 using static Advanced_C_.Program;
 using Microsoft.Win32.SafeHandles;
+using System.Security.Cryptography;
 
 namespace Advanced_C_
 {
@@ -67,8 +68,71 @@ namespace Advanced_C_
 
             //object classInstance = Activator.CreateInstance(type);
             //type.GetMethod("PrintName").Invoke(classInstance, null);
+            EnryptExample();
+
+        }
+
+        public static void EnryptExample()
+        {
+            string inputFile = "E:\\MyImage.jpg";
+            string encryptedFile = "E:\\encrypted.jpg";
+            string decryptedFile = "E:\\decrypted.jpg";
 
 
+            // Generate a random IV for each encryption operation
+            byte[] iv;
+            using (Aes aesAlg = Aes.Create())
+            {
+                iv = aesAlg.IV;
+            }
+
+
+            string key = "1234567890123456";
+
+
+            EncryptFile(inputFile, encryptedFile, key, iv);
+            DecryptFile(encryptedFile, decryptedFile, key, iv);
+        }
+
+        static void EncryptFile(string inputFile, string outputFile, string key, byte[] iv)
+        {
+            using (Aes aesAlg = Aes.Create())
+            {
+                aesAlg.Key = System.Text.Encoding.UTF8.GetBytes(key);
+                aesAlg.IV = iv;
+
+
+                using (FileStream fsInput = new FileStream(inputFile, FileMode.Open))
+                using (FileStream fsOutput = new FileStream(outputFile, FileMode.Create))
+                using (ICryptoTransform encryptor = aesAlg.CreateEncryptor())
+                using (CryptoStream cryptoStream = new CryptoStream(fsOutput, encryptor, CryptoStreamMode.Write))
+                {
+                    // Write the IV to the beginning of the file
+                    fsOutput.Write(iv, 0, iv.Length);
+                    fsInput.CopyTo(cryptoStream);
+                }
+            }
+        }
+
+
+        static void DecryptFile(string inputFile, string outputFile, string key, byte[] iv)
+        {
+            using (Aes aesAlg = Aes.Create())
+            {
+                aesAlg.Key = System.Text.Encoding.UTF8.GetBytes(key);
+                aesAlg.IV = iv;
+
+
+                using (FileStream fsInput = new FileStream(inputFile, FileMode.Open))
+                using (FileStream fsOutput = new FileStream(outputFile, FileMode.Create))
+                using (ICryptoTransform decryptor = aesAlg.CreateDecryptor())
+                using (CryptoStream cryptoStream = new CryptoStream(fsOutput, decryptor, CryptoStreamMode.Write))
+                {
+                    // Skip the IV at the beginning of the file
+                    fsInput.Seek(iv.Length, SeekOrigin.Begin);
+                    fsInput.CopyTo(cryptoStream);
+                }
+            }
         }
 
         [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
@@ -80,22 +144,23 @@ namespace Advanced_C_
             public LengthAttribute(int Min, int Max)
             {
                 this.Min = Min;
-                this.Max = Max; 
+                this.Max = Max;
             }
 
-        public class Person
-        {
-            public string Name { get; set; }
-
-            [Length(20, 100, ErrMsg = "Age must be between 20 and 100")]
-            public int Age { get; set; }
-
-            public void PrintName ()
+            public class Person
             {
-                Console.WriteLine("Abuuuuu");
+                public string Name { get; set; }
+
+                [Length(20, 100, ErrMsg = "Age must be between 20 and 100")]
+                public int Age { get; set; }
+
+                public void PrintName()
+                {
+                    Console.WriteLine("Abuuuuu");
+                }
+
             }
 
         }
-
     }
 }
