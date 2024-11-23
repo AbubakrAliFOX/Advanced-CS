@@ -2,14 +2,15 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Runtime.Serialization.Json;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Schema;
 using System.Xml.Serialization;
-using System.Runtime.Serialization.Json;
-using System.Runtime.Serialization.Formatters.Binary;
-using static Advanced_C_.Program;
 using Microsoft.Win32.SafeHandles;
-using System.Security.Cryptography;
+using static Advanced_C_.Program;
 
 namespace Advanced_C_
 {
@@ -68,8 +69,159 @@ namespace Advanced_C_
 
             //object classInstance = Activator.CreateInstance(type);
             //type.GetMethod("PrintName").Invoke(classInstance, null);
-            EnryptExample();
 
+            //EnryptExample();
+            //OperatorOverloadingExample();
+            LINQ();
+        }
+
+        public static void LINQ()
+        {
+            var countries = new List<Country>
+            {
+                new Country
+                {
+                    Name = "CountryA",
+                    Continent = "Asia",
+                    Cities = new List<City>
+                    {
+                        new City
+                        {
+                            Name = "CityA1",
+                            Population = 5000,
+                            IsCapital = false
+                        },
+                        new City
+                        {
+                            Name = "CityA2",
+                            Population = 25000,
+                            IsCapital = true
+                        },
+                        new City
+                        {
+                            Name = "CityA3",
+                            Population = 8000,
+                            IsCapital = false
+                        }
+                    }
+                },
+                new Country
+                {
+                    Name = "CountryB",
+                    Continent = "Europe",
+                    Cities = new List<City>
+                    {
+                        new City
+                        {
+                            Name = "CityB1",
+                            Population = 15000,
+                            IsCapital = false
+                        },
+                        new City
+                        {
+                            Name = "CityB2",
+                            Population = 35000,
+                            IsCapital = true
+                        },
+                        new City
+                        {
+                            Name = "CityB3",
+                            Population = 4000,
+                            IsCapital = false
+                        }
+                    }
+                },
+                new Country
+                {
+                    Name = "CountryC",
+                    Continent = "Africa",
+                    Cities = new List<City>
+                    {
+                        new City
+                        {
+                            Name = "CityC1",
+                            Population = 12000,
+                            IsCapital = false
+                        },
+                        new City
+                        {
+                            Name = "CityC2",
+                            Population = 22000,
+                            IsCapital = true
+                        }
+                    }
+                }
+            };
+
+            var citiesQuery =
+                from country in countries
+                group country by country.Name[0];
+
+            foreach (var item in citiesQuery)
+            {
+                Console.WriteLine(item);
+            }
+        }
+
+        public class City
+        {
+            public string Name { get; set; }
+            public int Population { get; set; }
+            public bool IsCapital { get; set; } // Example of an additional property
+        }
+
+        public class Country
+        {
+            public string Name { get; set; }
+            public string Continent { get; set; } // Example of a country-level property
+            public List<City> Cities { get; set; }
+        }
+
+        public static void OperatorOverloadingExample()
+        {
+            Point p1 = new Point(3, 3);
+            Point p2 = new Point(3, 3);
+
+            Point p3 = p1 + p2;
+
+            Console.WriteLine(p1 == p2);
+        }
+
+        class Point
+        {
+            public int x;
+            public int y;
+
+            public Point(int x, int y)
+            {
+                this.y = y;
+                this.x = x;
+            }
+
+            public static Point operator +(Point left, Point right)
+            {
+                return new Point(left.x + right.x, left.y + right.y);
+            }
+
+            public static bool operator ==(Point left, Point right)
+            {
+                return left.y == right.y && left.x == right.x;
+            }
+
+            public static bool operator !=(Point left, Point right)
+            {
+                return left.y != right.y || left.x != right.x;
+            }
+
+            public static bool operator >(Point left, Point right)
+            {
+                return left.y > right.y && left.x > right.x;
+            }
+
+            public static bool operator <(Point left, Point right)
+            {
+                return left.y < right.y && left.x < right.x;
+            }
         }
 
         public static void EnryptExample()
@@ -78,7 +230,6 @@ namespace Advanced_C_
             string encryptedFile = "E:\\encrypted.jpg";
             string decryptedFile = "E:\\decrypted.jpg";
 
-
             // Generate a random IV for each encryption operation
             byte[] iv;
             using (Aes aesAlg = Aes.Create())
@@ -86,9 +237,7 @@ namespace Advanced_C_
                 iv = aesAlg.IV;
             }
 
-
             string key = "1234567890123456";
-
 
             EncryptFile(inputFile, encryptedFile, key, iv);
             DecryptFile(encryptedFile, decryptedFile, key, iv);
@@ -101,11 +250,16 @@ namespace Advanced_C_
                 aesAlg.Key = System.Text.Encoding.UTF8.GetBytes(key);
                 aesAlg.IV = iv;
 
-
                 using (FileStream fsInput = new FileStream(inputFile, FileMode.Open))
                 using (FileStream fsOutput = new FileStream(outputFile, FileMode.Create))
                 using (ICryptoTransform encryptor = aesAlg.CreateEncryptor())
-                using (CryptoStream cryptoStream = new CryptoStream(fsOutput, encryptor, CryptoStreamMode.Write))
+                using (
+                    CryptoStream cryptoStream = new CryptoStream(
+                        fsOutput,
+                        encryptor,
+                        CryptoStreamMode.Write
+                    )
+                )
                 {
                     // Write the IV to the beginning of the file
                     fsOutput.Write(iv, 0, iv.Length);
@@ -114,7 +268,6 @@ namespace Advanced_C_
             }
         }
 
-
         static void DecryptFile(string inputFile, string outputFile, string key, byte[] iv)
         {
             using (Aes aesAlg = Aes.Create())
@@ -122,11 +275,16 @@ namespace Advanced_C_
                 aesAlg.Key = System.Text.Encoding.UTF8.GetBytes(key);
                 aesAlg.IV = iv;
 
-
                 using (FileStream fsInput = new FileStream(inputFile, FileMode.Open))
                 using (FileStream fsOutput = new FileStream(outputFile, FileMode.Create))
                 using (ICryptoTransform decryptor = aesAlg.CreateDecryptor())
-                using (CryptoStream cryptoStream = new CryptoStream(fsOutput, decryptor, CryptoStreamMode.Write))
+                using (
+                    CryptoStream cryptoStream = new CryptoStream(
+                        fsOutput,
+                        decryptor,
+                        CryptoStreamMode.Write
+                    )
+                )
                 {
                     // Skip the IV at the beginning of the file
                     fsInput.Seek(iv.Length, SeekOrigin.Begin);
@@ -141,6 +299,7 @@ namespace Advanced_C_
             public int Min { get; set; }
             public int Max { get; set; }
             public string ErrMsg { get; set; }
+
             public LengthAttribute(int Min, int Max)
             {
                 this.Min = Min;
@@ -158,9 +317,7 @@ namespace Advanced_C_
                 {
                     Console.WriteLine("Abuuuuu");
                 }
-
             }
-
         }
     }
 }
